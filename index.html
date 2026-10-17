@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Font 1: Calibri for the name (Carlito = free look-alike fallback)  ·  Font 2: Mulish (classic light text) -->
-  <link href="https://fonts.googleapis.com/css2?family=Carlito&family=Mulish:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Carlito&family=Mulish:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --ink: #111;
@@ -30,7 +30,7 @@
 
     .page {
       display: grid;
-      grid-template-columns: 200px 1fr;
+      grid-template-columns: clamp(220px, 23vw, 330px) 1fr;
       min-height: 100vh;
       padding: var(--edge) clamp(40px, 6vw, 96px) var(--edge) 43px; /* blank space on the right */
     }
@@ -44,7 +44,7 @@
     .name {
       font-family: var(--serif);
       font-weight: 400;
-      font-size: 36px;
+      font-size: clamp(46px, 5vw, 72px); /* about twice the old size on large screens */
       line-height: 0.88;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -56,11 +56,11 @@
       letter-spacing: 1.2px;
       margin-top: 14px;
     }
-    nav { margin-top: 44px; }
+    nav { margin-top: 56px; }
     nav ul { list-style: none; }
-    nav li { margin-bottom: 4px; line-height: 15px; }
+    nav li { margin-bottom: 8px; line-height: 20px; }
     nav a {
-      font-size: 12px;
+      font-size: 16px;
       letter-spacing: 0.6px;
       color: #000;
       font-weight: 400;
@@ -69,8 +69,8 @@
     nav a:hover { opacity: .55; }
     nav .group + .group { margin-top: 26px; }
     
-    .social { display: flex; gap: 12px; margin-top: 26px; }
-    .social svg { width: 11px; height: 11px; stroke: var(--muted); fill: none; stroke-width: 1.6; }
+    .social { display: flex; gap: 12px; margin-top: 32px; }
+    .social svg { width: 15px; height: 15px; stroke: var(--muted); fill: none; stroke-width: 1.6; }
     .social a:hover svg { stroke: var(--ink); }
 
     .caption {
@@ -81,7 +81,13 @@
       font-size: 11px;
       line-height: 1.45;
       letter-spacing: 0.2px;
-      max-width: 140px;
+      width: 140px;
+    }
+    /* home page: center the headshot on the whole window. The photo is full height
+       with a 2:3 shape, so its width is a third of the height doubled; push it right
+       by whatever is left after the menu column. The caption follows beside it. */
+    body[data-page="home"] .photo img {
+      margin-left: max(0px, calc(50vw - 43px - clamp(220px, 23vw, 330px) - (100vh - 2 * var(--edge)) / 3));
     }
 
 
@@ -97,14 +103,14 @@
       color: #000;
       font-weight: 400;
       font-size: 12.5px;
-      line-height: 1.65;
+      line-height: 1.55;
       letter-spacing: 0.15px;
       animation: fade .6s ease both;
     }
-    body[data-page="about"] #about,
-    body[data-page="press"] #press,
-    body[data-page="projects"] #projects,
-    body[data-page="contact"] #contact { display: block; }
+    body[data-page="about"] #page-about,
+    body[data-page="press"] #page-press,
+    body[data-page="projects"] #page-projects,
+    body[data-page="contact"] #page-contact { display: block; }
     .panel h2 {
       font-family: var(--serif);
       font-weight: 400;
@@ -112,11 +118,11 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
       line-height: 1;
-      margin-bottom: 18px;
+      margin: 0 0 14px;
     }
     .panel h3 {
       font-size: 10.5px;
-      font-weight: 400;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1.2px;
       margin: 26px 0 8px;
@@ -128,13 +134,48 @@
       -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
       mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
     }
-    .panel p + p { margin-top: 12px; }
+    .panel p + p { margin-top: 9px; }
     .panel ul { list-style: none; }
-    .panel li { margin-bottom: 14px; }
+    .panel li { margin-bottom: 10px; }
     .panel li span { display: block; color: var(--muted); font-size: 11px; }
     .panel a:hover { opacity: .55; }
     /* the caption belongs to the headshot on the home page only */
     body:not([data-page="home"]) .caption { display: none; }
+
+    /* desktop: text pages start level with the menu, below the name */
+    .panel { margin-top: calc(clamp(46px, 5vw, 72px) * 1.76 + 56px + var(--menu-nudge, 0px)); }
+
+    /* desktop text pages: the photo starts level with the menu and the page heading */
+    body:not([data-page="home"]) .photo img {
+      align-self: flex-start;
+      margin-top: calc(clamp(46px, 5vw, 72px) * 1.76 + 56px + 4.7px);
+      height: calc(100% - (clamp(46px, 5vw, 72px) * 1.76 + 56px + 4.7px));
+    }
+
+    .show-all { display: none; } /* desktop shows every talk */
+
+    /* text pages (desktop): text on the left, starting level with the menu,
+       and the page's photo on the right, full height from the top of the name */
+    .panel {
+      flex: 1 1 320px;
+      min-width: 0;
+      max-width: 560px;
+      align-self: flex-start;
+      height: auto;
+      /* the text scrolls inside this box; the page itself never scrolls */
+      max-height: calc(100% - (clamp(46px, 5vw, 72px) * 1.76 + 56px));
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      margin-right: 40px;
+      padding-bottom: 0;
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    /* soft fade at the bottom while there is more text below */
+    .panel.more-below {
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 44px), transparent);
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 44px), transparent);
+    }
 
     /* ---------- Right column ---------- */
     .photo {
@@ -182,16 +223,84 @@
 
     /* ---------- Mobile ---------- */
     @media (max-width: 900px) {
+      /* tap-to-open sections (built by the script below), phone only:
+         plain text headings with a quiet "show / hide" cue, no lines or icons */
+      .fold { margin-top: 14px; }
+      .fold > h3 {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin: 0 0 10px;
+        cursor: pointer;
+      }
+      .fold > h3::after {
+        content: "show";
+        text-transform: none;
+        letter-spacing: 0.3px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .fold.open > h3::after { content: "hide"; }
+      .fold:not(.open) > :not(h3) { display: none; }
+      .panel > p:last-of-type { margin-bottom: 8px; }
+
+      /* long entries: two lines, tap to read more */
+      li.long { cursor: pointer; }
+      li.long span {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      li.long.open span { display: block; }
+      li.long::after { content: "more"; display: block; font-size: 11px; color: var(--muted); margin-top: 3px; letter-spacing: 0.3px; }
+      li.long.open::after { content: "less"; }
+
+      /* show the five latest talks first */
+      ul.limited > li:nth-child(n+6) { display: none; }
+      button.show-all {
+        display: block;
+        background: none;
+        border: 0;
+        padding: 0;
+        font: inherit;
+        font-size: 11px;
+        letter-spacing: 0.3px;
+        color: var(--muted);
+        cursor: pointer;
+        margin: -2px 0 6px;
+      }
+
       :root { --edge: 24px; }
-      .page { grid-template-columns: 1fr; padding: 32px 20px; gap: 32px; }
-      .side { padding-right: 0; }
-      .name { font-size: 36px; }
-      nav { margin-top: 32px; }
+      .page { grid-template-columns: 1fr; align-content: start; padding: 0 20px 32px; gap: 24px; }
+      /* sticky top bar: name on one line, menu in a row underneath */
+      .side {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+        background: var(--bg);
+        margin: 0 -20px;
+        padding: 18px 20px 12px;
+        border-bottom: 1px solid #e6e6e6;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .name { font-size: 26px; width: 100%; line-height: 1; }
+      .name br { display: none; }
+      nav { margin-top: 10px; }
+      nav ul { display: flex; gap: 18px; }
+      nav li { margin: 0; }
+      nav a { font-size: 13px; }
+      .social { margin: 10px 0 0 auto; }
       .photo { height: auto; order: 2; }
       .photo img { width: 100%; height: auto; }
       .photo { flex-direction: column; align-items: flex-start; }
       .caption { margin: 14px 0 0; }
-      .panel { width: 100%; height: auto; overflow: visible; margin: 0 0 28px; padding: 0; -webkit-mask-image: none; mask-image: none; }
+      body[data-page="home"] .photo img { margin-left: 0; }
+      body:not([data-page="home"]) .photo img { margin-top: 0; height: auto; }
+      .panel, .panel.more-below { flex: none; width: 100%; max-width: none; max-height: none; height: auto; overflow: visible; margin: 0 0 28px; padding: 0; -webkit-mask-image: none; mask-image: none; }
+      .panel { margin-top: 0; }
     }
   </style>
 </head>
@@ -202,7 +311,7 @@
 
   <main class="page">
     <aside class="side">
-      <h1 class="name"><a href="#">Nancy<br>Mykoff</a></h1>
+      <h1 class="name"><a href="#">Nancy<br> Mykoff</a></h1>
 
       <nav>
         <ul class="group">
@@ -221,13 +330,13 @@
     </aside>
 
     <section class="photo">
-      <article class="panel" id="about">
+      <article class="panel" id="page-about">
         <h2>About</h2>
         <p>Dr. Nancy Mykoff is a historian of the United States. She has taught American History and Gender Studies at University College Roosevelt, the international honors college of Utrecht University in Middelburg, the Netherlands, since 1997.</p>
         <p>Her passions are teaching and learning about, and with, Native American and Canadian histories and lives, as well as race, gender and media studies.</p>
         <p>A recent grant from CHARM-EU supports her current project, <em>Innovating Education</em>. It explores how Indigenous and Western ways of knowing can strengthen each other through cross-cultural collaborations built on trust, reciprocity and equity. The project uses experiential learning, including the arts, to share and create new knowledge and communities that bridge social divides.</p>
         <p>She is also the founder and leader of The Walking With Pride and Power Project, a traveling collaborative textile artwork that gives voice to queer and marginalized people.</p>
-        <p>She earned her BA in American History at Newcomb College in New Orleans and her MA and PhD at New York University. She has supervised theses at universities across the Netherlands and serves on the board of the Netherlands American Studies Association.</p>
+        <p>She has supervised theses at universities across the Netherlands and serves on the board of the Netherlands American Studies Association.</p>
 
         <h3>Education</h3>
         <ul>
@@ -254,7 +363,7 @@
         <p>Native American and Canadian Histories · American Studies · Women's and Gender Studies · Race · Media Studies · Life Writing · Memory Studies · Community Engaged Learning</p>
       </article>
 
-      <article class="panel" id="press">
+      <article class="panel" id="page-press">
         <h2>Press</h2>
         <h3>Selected talks &amp; presentations</h3>
         <ul>
@@ -288,7 +397,7 @@
         </ul>
       </article>
 
-      <article class="panel" id="projects">
+      <article class="panel" id="page-projects">
         <h2>Projects</h2>
         <h3>Current projects</h3>
         <ul>
@@ -330,7 +439,7 @@
         <p>PhD co-promotor at Leiden University and Utrecht University, PhD committee member at the University of Rotterdam, and thesis supervisor at the University of Amsterdam, Radboud University and University College Roosevelt.</p>
       </article>
 
-      <article class="panel" id="contact">
+      <article class="panel" id="page-contact">
         <h2>Contact</h2>
         <p>Dr. Nancy Mykoff<br>University College Roosevelt<br>Utrecht University<br>Middelburg, the Netherlands</p>
         <h3>Email</h3>
@@ -346,17 +455,86 @@
   </main>
 
   <script>
+    // Phone only (the styles live in the mobile CSS): fold each page's sections
+    // into tap-to-open headings and shorten long entries to two lines.
+    // On desktop everything shows, and the text box scrolls instead.
+    (function () {
+      var openFirst = { about: false, press: true, projects: true }; // press opens on Selected talks, projects on Current projects
+      Object.keys(openFirst).forEach(function (page) {
+        var panel = document.getElementById('page-' + page);
+        var heads = panel.querySelectorAll(':scope > h3');
+        heads.forEach(function (h3, i) {
+          var fold = document.createElement('section');
+          fold.className = 'fold' + (i === 0 && openFirst[page] ? ' open' : '');
+          h3.parentNode.insertBefore(fold, h3);
+          var node = h3;
+          while (node && !(node !== h3 && node.tagName === 'H3')) {
+            var next = node.nextElementSibling;
+            fold.appendChild(node);
+            node = next;
+          }
+          h3.setAttribute('role', 'button');
+          h3.setAttribute('tabindex', '0');
+          h3.setAttribute('aria-expanded', fold.classList.contains('open'));
+          function toggle() {
+            fold.classList.toggle('open');
+            h3.setAttribute('aria-expanded', fold.classList.contains('open'));
+            updateScrollHints();
+          }
+          h3.addEventListener('click', toggle);
+          h3.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+          });
+        });
+      });
+
+      document.querySelectorAll('.panel li').forEach(function (li) {
+        var span = li.querySelector('span');
+        if (!span || span.textContent.length < 110) return;
+        li.classList.add('long');
+        li.addEventListener('click', function (e) {
+          if (e.target.closest('a')) return;
+          li.classList.toggle('open');
+        });
+      });
+
+      // fade hint at the bottom of a text box only while there is more to scroll to
+      function updateScrollHints() {
+        document.querySelectorAll('.panel').forEach(function (p) {
+          var more = p.scrollHeight - p.scrollTop - p.clientHeight > 2;
+          p.classList.toggle('more-below', more);
+        });
+      }
+      window.updateScrollHints = updateScrollHints;
+      document.querySelectorAll('.panel').forEach(function (p) {
+        p.addEventListener('scroll', updateScrollHints, { passive: true });
+      });
+      window.addEventListener('resize', updateScrollHints);
+      document.addEventListener('click', function () { setTimeout(updateScrollHints, 0); });
+
+      var talks = document.querySelector('#page-press .fold ul');
+      if (talks && talks.children.length > 5) {
+        talks.classList.add('limited');
+        var btn = document.createElement('button');
+        btn.className = 'show-all';
+        btn.textContent = 'show all ' + talks.children.length + ' talks';
+        btn.addEventListener('click', function () { talks.classList.remove('limited'); btn.remove(); });
+        talks.after(btn);
+      }
+    })();
+
     // Simple page switching: #about, #press, #projects, #contact (empty = home).
     (function () {
       var pages = ['about', 'press', 'projects', 'contact'];
       // Photo per page; anything not listed uses the headshot.
-      var photos = { about: 'about.jpg', press: 'press.jpg' };
+      var photos = { about: 'about.jpg', press: 'press.jpg', contact: 'about.jpg' }; // projects uses the headshot for now
       var img = document.getElementById('page-photo');
       Object.keys(photos).forEach(function (k) { new Image().src = photos[k]; });
       function show() {
         var page = location.hash.slice(1);
         if (pages.indexOf(page) === -1) page = 'home';
         document.body.setAttribute('data-page', page);
+        if (window.updateScrollHints) setTimeout(window.updateScrollHints, 0);
         var src = photos[page] || 'headshot.jpg';
         if (img.getAttribute('src') !== src) {
           img.setAttribute('src', src);
