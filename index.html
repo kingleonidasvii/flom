@@ -298,9 +298,11 @@
       .photo { flex-direction: column; align-items: flex-start; }
       .caption { margin: 14px 0 0; }
       body[data-page="home"] .photo img { margin-left: 0; }
+      /* every page: photo first, same shape and size as the home headshot, text below */
+      .photo img { order: -1; aspect-ratio: 2 / 3; object-fit: cover; }
       body:not([data-page="home"]) .photo img { margin-top: 0; height: auto; }
-      .panel, .panel.more-below { flex: none; width: 100%; max-width: none; max-height: none; height: auto; overflow: visible; margin: 0 0 28px; padding: 0; -webkit-mask-image: none; mask-image: none; }
-      .panel { margin-top: 0; }
+      .panel, .panel.more-below { flex: none; width: 100%; max-width: none; max-height: none; height: auto; overflow: visible; margin: 24px 0 28px; padding: 0; -webkit-mask-image: none; mask-image: none; }
+      .panel { margin-top: 24px; }
     }
   </style>
 </head>
@@ -441,7 +443,7 @@
 
       <article class="panel" id="page-contact">
         <h2>Contact</h2>
-        <p>Dr. Nancy Mykoff<br>University College Roosevelt<br>Utrecht University<br>Middelburg, the Netherlands</p>
+        <p>Dr. Nancy Mykoff<br>Amsterdam, the Netherlands</p>
         <h3>Email</h3>
         <p><a href="mailto:n.mykoff@gmail.com">n.mykoff@gmail.com</a></p>
         <h3>Elsewhere</h3>
