@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nancy Mykoff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Font 1: Calibri for the name (Carlito = free look-alike fallback)  ·  Font 2: Mulish (classic light text) -->
+  <link href="https://fonts.googleapis.com/css2?family=Carlito&family=Mulish:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #111;
+      --muted: #6b6b6b;
+      --bg: #fff;
+      --edge: 46px;
+      --serif: Calibri, Carlito, "Segoe UI", sans-serif;
+      --text: "Mulish", "Helvetica Neue", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--text);
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    .page {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      min-height: 100vh;
+      padding: var(--edge) clamp(40px, 6vw, 96px) var(--edge) 43px; /* blank space on the right */
+    }
+
+    /* ---------- Left column ---------- */
+    .side {
+      display: flex;
+      flex-direction: column;
+      padding-right: 24px;
+    }
+    .name {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 36px;
+      line-height: 0.88;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .tagline {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 13px;
+      letter-spacing: 1.2px;
+      margin-top: 14px;
+    }
+    nav { margin-top: 44px; }
+    nav ul { list-style: none; }
+    nav li { margin-bottom: 4px; line-height: 15px; }
+    nav a {
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      color: #000;
+      font-weight: 400;
+      transition: opacity .2s;
+    }
+    nav a:hover { opacity: .55; }
+    nav .group + .group { margin-top: 26px; }
+    
+    .social { display: flex; gap: 12px; margin-top: 26px; }
+    .social svg { width: 11px; height: 11px; stroke: var(--muted); fill: none; stroke-width: 1.6; }
+    .social a:hover svg { stroke: var(--ink); }
+
+    .caption {
+      flex-shrink: 0;
+      margin-left: 20px;
+      color: #000;
+      font-weight: 400;
+      font-size: 11px;
+      line-height: 1.45;
+      letter-spacing: 0.2px;
+      max-width: 140px;
+    }
+
+
+    /* ---------- Text pages (about / press / projects / contact) ---------- */
+    .panel {
+      display: none;
+      width: clamp(240px, 24vw, 300px);
+      flex-shrink: 0;
+      height: 100%;
+      overflow-y: auto;
+      margin-right: 32px;
+      padding-right: 8px;
+      color: #000;
+      font-weight: 400;
+      font-size: 12.5px;
+      line-height: 1.65;
+      letter-spacing: 0.15px;
+      animation: fade .6s ease both;
+    }
+    body[data-page="about"] #about,
+    body[data-page="press"] #press,
+    body[data-page="projects"] #projects,
+    body[data-page="contact"] #contact { display: block; }
+    .panel h2 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 22px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      line-height: 1;
+      margin-bottom: 18px;
+    }
+    .panel h3 {
+      font-size: 10.5px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin: 26px 0 8px;
+    }
+    .panel:focus { outline: none; }
+    /* soft fade at the bottom hints that the text scrolls */
+    .panel {
+      padding-bottom: 48px;
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 48px), transparent);
+    }
+    .panel p + p { margin-top: 12px; }
+    .panel ul { list-style: none; }
+    .panel li { margin-bottom: 14px; }
+    .panel li span { display: block; color: var(--muted); font-size: 11px; }
+    .panel a:hover { opacity: .55; }
+    /* the caption belongs to the headshot on the home page only */
+    body:not([data-page="home"]) .caption { display: none; }
+
+    /* ---------- Right column ---------- */
+    .photo {
+      min-width: 0;
+      height: calc(100vh - 2 * var(--edge));
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-end;
+    }
+    .photo img {
+      height: 100%;
+      width: auto;
+      max-width: 100%;
+      min-width: 0;
+      flex: 0 1 auto; /* when space is tight, trim the sides instead of shrinking */
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      animation: fade 1.2s ease both;
+    }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ---------- Intro (signature video) ---------- */
+    .intro {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity .9s ease, visibility .9s;
+    }
+    .intro video {
+      width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+      mix-blend-mode: multiply; /* white drops out, only the black signature shows */
+    }
+    .intro.done { opacity: 0; visibility: hidden; }
+    body.intro-on { overflow: hidden; }
+    body.intro-on .photo img { animation: none; opacity: 0; }
+
+    /* ---------- Mobile ---------- */
+    @media (max-width: 900px) {
+      :root { --edge: 24px; }
+      .page { grid-template-columns: 1fr; padding: 32px 20px; gap: 32px; }
+      .side { padding-right: 0; }
+      .name { font-size: 36px; }
+      nav { margin-top: 32px; }
+      .photo { height: auto; order: 2; }
+      .photo img { width: 100%; height: auto; }
+      .photo { flex-direction: column; align-items: flex-start; }
+      .caption { margin: 14px 0 0; }
+      .panel { width: 100%; height: auto; overflow: visible; margin: 0 0 28px; padding: 0; -webkit-mask-image: none; mask-image: none; }
+    }
+  </style>
+</head>
+<body class="intro-on">
+  <div class="intro" id="intro" aria-hidden="true">
+    <video src="intro.mp4" autoplay muted playsinline preload="auto"></video>
+  </div>
+
+  <main class="page">
+    <aside class="side">
+      <h1 class="name"><a href="#">Nancy<br>Mykoff</a></h1>
+
+      <nav>
+        <ul class="group">
+          <li><a href="#about">about</a></li>
+          <li><a href="#press">press</a></li>
+          <li><a href="#projects">projects</a></li>
+          <li><a href="#contact">contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="social">
+        <a href="https://www.linkedin.com/in/nancy-mykoff-027ba6146/" target="_blank" rel="noopener" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7.5 10.5v6M7.5 7.5v.01M11 16.5v-6M11 13a2.5 2.5 0 0 1 5 0v3.5"/></svg>
+        </a>
+      </div>
+    </aside>
+
+    <section class="photo">
+      <article class="panel" id="about">
+        <h2>About</h2>
+        <p>Dr. Nancy Mykoff is a historian of the United States. She has taught American History and Gender Studies at University College Roosevelt, the international honors college of Utrecht University in Middelburg, the Netherlands, since 1997.</p>
+        <p>Her passions are teaching and learning about, and with, Native American and Canadian histories and lives, as well as race, gender and media studies.</p>
+        <p>A recent grant from CHARM-EU supports her current project, <em>Innovating Education</em>. It explores how Indigenous and Western ways of knowing can strengthen each other through cross-cultural collaborations built on trust, reciprocity and equity. The project uses experiential learning, including the arts, to share and create new knowledge and communities that bridge social divides.</p>
+        <p>She is also the founder and leader of The Walking With Pride and Power Project, a traveling collaborative textile artwork that gives voice to queer and marginalized people.</p>
+        <p>She earned her BA in American History at Newcomb College in New Orleans and her MA and PhD at New York University. She has supervised theses at universities across the Netherlands and serves on the board of the Netherlands American Studies Association.</p>
+
+        <h3>Education</h3>
+        <ul>
+          <li>PhD, History<span>New York University, 2002. Culturally Jewish children's summer camp, 1920s–40s</span></li>
+          <li>MA, History<span>New York University, 1991. Native American women, 1700s</span></li>
+          <li>BA, American History, cum laude<span>Newcomb College, New Orleans, 1986</span></li>
+          <li>Senior Teaching Qualification<span>2013</span></li>
+        </ul>
+
+        <h3>Fellowships</h3>
+        <ul>
+          <li>Diversity, Equality and Inclusivity (DEI) Fellow<span>University College Roosevelt, 2022–2023</span></li>
+          <li>Teaching Fellow<span>University College Roosevelt, 2020–2022</span></li>
+        </ul>
+
+        <h3>Affiliations</h3>
+        <ul>
+          <li>Board Member<span>Netherlands American Studies Association (NASA)</span></li>
+          <li>Member<span>American Historical Association</span></li>
+          <li>Inclusion Committee, Program Committee and Council<span>University College Roosevelt</span></li>
+        </ul>
+
+        <h3>Research interests</h3>
+        <p>Native American and Canadian Histories · American Studies · Women's and Gender Studies · Race · Media Studies · Life Writing · Memory Studies · Community Engaged Learning</p>
+      </article>
+
+      <article class="panel" id="press">
+        <h2>Press</h2>
+        <h3>Selected talks &amp; presentations</h3>
+        <ul>
+          <li>“Environmental Stories”<span>With TREnD, European Association of American Studies Conference, Bologna, September 2026</span></li>
+          <li>“Best Practices / New Designs: Collaborations with Indigenous Universities, Communities, and Individuals in the United States and Canada”<span>N-TISE Workshop, Leiden University, March 2026</span></li>
+          <li>“Reflections of a Transformative Education: Stolen Lives – the Indian Residential School”<span>VIS Live Conference, Utrecht, November 2024</span></li>
+          <li>“Reflections on a Transformative Education: Collaborations with Indigenous Universities in the USA and Canada”<span>European Conference on Service Learning in Higher Education, Palma de Mallorca, September 2024</span></li>
+          <li>“Silencing and Erasure in North America: Comparative Histories of Violence against Women and Children, 19th–21st Century” (roundtable)<span>Organization of American Historians Annual Conference, New Orleans, April 2024</span></li>
+          <li>“Virtual Exchanges and Environmental Education: Teaching American Studies in the Planetary Age”<span>American Studies Association Annual Meeting, Montreal, November 2023</span></li>
+          <li>“My Body Aches to Act: Reflections on Community Engaged Learning”<span>European Conference on Service Learning in Higher Education, Rome, September 2023</span></li>
+          <li>“Going Glocal: Engaging Standing Rock”<span>Netherlands American Studies Association Roundtable, March 2023</span></li>
+          <li>“Stolen Lives: How the Abduction, Rape and Murder of American Indian Women and Children Relate to ‘Changes in the Land’”<span>Environmental Justice in US History, Roosevelt Institute for American Studies, Middelburg, October 2022</span></li>
+          <li>“Telling Stories: Revisiting ‘American’ History”<span>43rd American Indian Workshop Conference, Luxembourg, June 2022</span></li>
+          <li><a href="https://www.youtube.com/watch?v=Uy4F3dOoCPU" target="_blank" rel="noopener">Commentator: “Real Men Wear Masks: COVID-19 and the Crisis of American Masculinity”</a><span>Roosevelt Institute for American Studies, October 2021</span></li>
+          <li>“Un/Seen: Native Narratives”<span>Memory Studies Association Annual Meeting, July 2021</span></li>
+          <li>Chair: “Indigenous Environmental Justice”<span>Netherlands American Studies Association, Utrecht, May 2021</span></li>
+          <li>“Etty Hillesum”<span>Third International Etty Hillesum Conference, Middelburg, 2018</span></li>
+          <li>“Gender Matters”<span>Opening address, University College Roosevelt, 2013</span></li>
+        </ul>
+
+        <h3>Exhibitions</h3>
+        <ul>
+          <li><a href="https://ihlia.nl/programma/exposities/walking-with-pride-project/" target="_blank" rel="noopener">Walking With Pride and Power Project</a><span>IHLIA LGBTI Heritage, Amsterdam, 2 April – 10 May 2026</span></li>
+          <li>Walking With Pride and Power Project<span>Sitting Bull College, Standing Rock Reservation, North Dakota</span></li>
+          <li><a href="https://stolen-lives.com/" target="_blank" rel="noopener">Stolen Lives</a><span>Algoma University, Sault Ste. Marie, Canada</span></li>
+        </ul>
+
+        <h3>Featured</h3>
+        <ul>
+          <li>“Intolerance: A Transnational CEL Project on Queer Dis/empowerment”<span>Utrecht University Community Engaged Learning Inspiration Collection, May 2026</span></li>
+        </ul>
+      </article>
+
+      <article class="panel" id="projects">
+        <h2>Projects</h2>
+        <h3>Current projects</h3>
+        <ul>
+          <li>Innovating Education<span>CHARM-EU Grant, 2026–2028. A cross-cultural project exploring how Western and Indigenous ways of knowing meet, focusing on people marginalized by gender, race and age. It includes transnational art-activism such as Photo/Voice and The Walking With Pride and Power Project.</span></li>
+          <li>Environmental Stories<span>Joint Student &amp; Faculty Research Grant, University College Roosevelt, 2026. Part of TREnD (Teaching Resilience and Environmental Democracy), an Erasmus+ project. It builds interactive living maps centered on Indigenous stories about landscapes, waterways and ecosystems, documenting places of cultural, ecological and historical significance through 360-degree photography, storytelling, artwork and multimedia.</span></li>
+          <li><a href="https://thewalkingwithprideproject.com" target="_blank" rel="noopener">The Walking With Pride and Power Project</a><span>Founder and leader. A collaborative, transnational artwork against the persecution of queer and marginalized people. Participants each braid a piece of a shared rag rug from fabrics that mean something to them and attach their own words. The rug travels to exhibition spaces internationally.</span></li>
+        </ul>
+
+        <h3>Recent projects</h3>
+        <ul>
+          <li>Intolerance<span>Virtual International Samenwerking (VIS) Grant, Dutch Ministry of Education, Culture and Science, 2024–2025. A transnational exploration of the dis/empowerment of queer people in the Netherlands and the United States amid the global shift to the political right, using arts-based research and learning.</span></li>
+          <li><a href="https://stolen-lives.com/" target="_blank" rel="noopener">Stolen Lives: The Indian Residential School</a><span>Utrecht University Community Engaged Learning Grant, 2023–2024. A creative collaboration with Algoma University, housed in the former Shingwauk Residential School, contributing images, poetry, prose and stories to the Stolen Lives exhibition in Sault Ste. Marie, Canada.</span></li>
+          <li>De/Colonization: The Legacy of the Indian Boarding School in the U.S. and Canada<span>VIS Grant, Dutch Ministry of Education, Culture and Science, 2023–2024. Resulted in the Stolen Lives exhibition on survivors of the Shingwauk Residential School and its website.</span></li>
+          <li>Going Glocal: The Presence of the Past in Native America<span>2022–2023. A two-semester community engaged learning course on how de/colonization plays out in daily life on the Standing Rock Sioux Reservation, combining classroom learning in the Netherlands with experiential learning in North and South Dakota.</span></li>
+        </ul>
+
+        <h3>Grants &amp; awards</h3>
+        <ul>
+          <li>CHARM-EU Grant<span>2026–2028</span></li>
+          <li>Joint Student &amp; Faculty Research Grant<span>University College Roosevelt, 2026</span></li>
+          <li>CEL Grant for International Knowledge Sharing<span>Utrecht University, 2024–2025</span></li>
+          <li>Virtual International Samenwerking (VIS) Grant<span>Dutch Ministry of Education, Culture and Science, 2024–2025 and 2023–2024</span></li>
+          <li>Community Engaged Learning Grant<span>Utrecht University, 2023–2024</span></li>
+        </ul>
+
+        <h3>Selected writing</h3>
+        <ul>
+          <li>“Un/Seen Histories: Native News” (with H. Hochscheid and P. Schultz)<span>In <em>Speaking the Past: Heritage, Discourse, and Publishing in the Digital Age</em>, Theran Press, 2021</span></li>
+          <li><a href="https://jwa.org/encyclopedia/author/mykoff-nancy" target="_blank" rel="noopener">“Summer Camp History in the United States”</a><span><em>Shalvi/Hyman Encyclopedia of Jewish Women</em>, Jewish Women's Archive, 2021</span></li>
+          <li><a href="https://www.sidestone.com/books/unhinging-the-national-framework" target="_blank" rel="noopener">“Ordinary Lives: Teaching History with Life Narratives in Transnational Perspective”</a><span>In <em>Unhinging the National Framework: Perspectives on Transnational Life Writing</em>, Sidestone Press, 2020 (open access)</span></li>
+          <li>“Liberal Arts in the Netherlands: Transplanted and Transformed”<span>In <em>De disciplines voorbij</em>, 2012</span></li>
+          <li>Review of <em>The Presidents We Imagine</em> by Jeff Smith<span><em>European Journal of American Studies</em>, 2011</span></li>
+          <li>“Summer Camping”<span><em>The Encyclopedia of New England</em>, 2005</span></li>
+          <li><em>A Jewish Season: Ethnic-American Culture at Children's Summer Camp, 1918–1941</em><span>PhD dissertation, New York University, 2002</span></li>
+        </ul>
+
+        <h3>Teaching</h3>
+        <p>Native American Histories · Stolen Lives: The Indian Residential School · The Presence of the Past in Native America: Standing Rock Sioux Reservation · Field Practicum on the Sioux Reservation · Histories of Gender · Women's History · Introduction to American Studies: Science Fiction · From T.V. to TikTok: Media in ‘Ordinary’ Life · Media and Race: A History · Documenting Survival of WWII</p>
+        <p>PhD co-promotor at Leiden University and Utrecht University, PhD committee member at the University of Rotterdam, and thesis supervisor at the University of Amsterdam, Radboud University and University College Roosevelt.</p>
+      </article>
+
+      <article class="panel" id="contact">
+        <h2>Contact</h2>
+        <p>Dr. Nancy Mykoff<br>University College Roosevelt<br>Utrecht University<br>Middelburg, the Netherlands</p>
+        <h3>Email</h3>
+        <p><a href="mailto:n.mykoff@gmail.com">n.mykoff@gmail.com</a></p>
+        <h3>Elsewhere</h3>
+        <p><a href="https://www.linkedin.com/in/nancy-mykoff-027ba6146/" target="_blank" rel="noopener">LinkedIn</a><br>
+        <a href="https://scholar.google.com/citations?user=jK8n2fwAAAAJ&amp;hl=en" target="_blank" rel="noopener">Google Scholar</a></p>
+      </article>
+
+      <img id="page-photo" src="headshot.jpg" alt="Portrait of Dr. Nancy Mykoff">
+      <p class="caption">Dr. Mykoff in<br>New York City, 2026.</p>
+    </section>
+  </main>
+
+  <script>
+    // Simple page switching: #about, #press, #projects, #contact (empty = home).
+    (function () {
+      var pages = ['about', 'press', 'projects', 'contact'];
+      // Photo per page; anything not listed uses the headshot.
+      var photos = { about: 'about.jpg', press: 'press.jpg' };
+      var img = document.getElementById('page-photo');
+      Object.keys(photos).forEach(function (k) { new Image().src = photos[k]; });
+      function show() {
+        var page = location.hash.slice(1);
+        if (pages.indexOf(page) === -1) page = 'home';
+        document.body.setAttribute('data-page', page);
+        var src = photos[page] || 'headshot.jpg';
+        if (img.getAttribute('src') !== src) {
+          img.setAttribute('src', src);
+          img.style.animation = 'none'; img.offsetWidth; img.style.animation = '';
+        }
+        document.querySelectorAll('nav a').forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + page);
+        });
+        window.scrollTo(0, 0);
+      }
+      window.addEventListener('hashchange', show);
+      show();
+    })();
+
+    // Plays the signature video once, then fades into the site. Click to skip.
+    (function () {
+      var intro = document.getElementById('intro');
+      var video = intro.querySelector('video');
+      var finished = false;
+      function finish() {
+        if (finished) return;
+        finished = true;
+        intro.classList.add('done');
+        document.body.classList.remove('intro-on');
+        setTimeout(function () { intro.remove(); }, 1000);
+      }
+      video.addEventListener('ended', function () { setTimeout(finish, 600); });
+      video.addEventListener('error', finish);
+      intro.addEventListener('click', finish);
+      var play = video.play();
+      if (play && play.catch) play.catch(finish);
+      setTimeout(finish, 6000); // safety net if the video stalls
+    })();
+  </script>
+</body>
+</html>
