@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nancy Mykoff</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="889x889" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <!-- Font 1: Calibri for the name (Carlito = free look-alike fallback)  ·  Font 2: Mulish (classic light text) -->
@@ -529,7 +532,7 @@
     (function () {
       var pages = ['about', 'press', 'projects', 'contact'];
       // Photo per page; anything not listed uses the headshot.
-      var photos = { about: 'about.jpg', press: 'press.jpg', contact: 'about.jpg' }; // projects uses the headshot for now
+      var photos = { about: 'about.jpg', press: 'press.jpg', projects: 'projects.jpg', contact: 'about.jpg' };
       var img = document.getElementById('page-photo');
       Object.keys(photos).forEach(function (k) { new Image().src = photos[k]; });
       function show() {
