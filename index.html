@@ -446,7 +446,7 @@
 
       <article class="panel" id="page-contact">
         <h2>Contact</h2>
-        <p>Dr. Nancy Mykoff<br>Amsterdam, the Netherlands</p>
+        <p>Nancy Mykoff, PhD<br>Amsterdam, the Netherlands</p>
         <h3>Email</h3>
         <p><a href="mailto:n.mykoff@gmail.com">n.mykoff@gmail.com</a></p>
         <h3>Elsewhere</h3>
@@ -532,7 +532,7 @@
     (function () {
       var pages = ['about', 'press', 'projects', 'contact'];
       // Photo per page; anything not listed uses the headshot.
-      var photos = { about: 'about.jpg', press: 'press.jpg', projects: 'projects.jpg', contact: 'about.jpg' };
+      var photos = { about: 'about.jpg', press: 'press.jpg', projects: 'projects.jpg', contact: 'contact.jpg' };
       var img = document.getElementById('page-photo');
       Object.keys(photos).forEach(function (k) { new Image().src = photos[k]; });
       function show() {
